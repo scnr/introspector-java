@@ -9,7 +9,7 @@ public class InstrumentationAgent {
     private static final Map<String, String> options = new HashMap<>();
 
     public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("Initializing Instrumentation Agent...");
+        System.out.println("Initializing Codename SCNR Introspector agent...");
         parseAgentArgs(agentArgs);
         // System.out.println(options);
         ClassTransformer.setInstrumentation(inst);
@@ -17,7 +17,7 @@ public class InstrumentationAgent {
     }
     
     public static void agentmain(String agentArgs, Instrumentation inst) {
-        System.out.println("Attaching Instrumentation Agent...");
+        System.out.println("Attaching Codename SCNR Introspector agent...");
         parseAgentArgs(agentArgs);
         ClassTransformer.setInstrumentation(inst);
         inst.addTransformer(new ClassTransformer(), true);
