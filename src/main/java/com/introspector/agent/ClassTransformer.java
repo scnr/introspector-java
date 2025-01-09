@@ -1,0 +1,100 @@
+package com.introspector.agent;
+
+import org.objectweb.asm.*;
+
+import com.introspector.core.CodeTracer;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
+import java.security.ProtectionDomain;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ClassTransformer implements ClassFileTransformer {
+    
+    private static final CodeTracer codeTracer = new CodeTracer();
+    private static final Set<String> transformedClasses = ConcurrentHashMap.newKeySet();
+    private static Instrumentation instrumentation;
+    private static final String BASE_DIR = "src/main/java"; // Adjust this as needed
+
+    public static void setInstrumentation(Instrumentation inst) {
+        instrumentation = inst;
+    }
+
+    @Override
+    public byte[] transform(ClassLoader loader, String className, 
+            Class<?> classBeingRedefined,
+            ProtectionDomain protectionDomain, 
+            byte[] classfileBuffer) {
+        
+        if (className == null || transformedClasses.contains(className)) {
+            return classfileBuffer;
+        }
+
+        String pathStartWith = InstrumentationAgent.getOption("path_start_with");
+        String pathEndWith = InstrumentationAgent.getOption("path_end_with");
+        String pathIncludePatterns = InstrumentationAgent.getOption("path_include_patterns");
+        String pathExcludePatterns = InstrumentationAgent.getOption("path_exclude_patterns");
+
+        if ((pathStartWith != null && !className.startsWith(pathStartWith)) ||
+            (pathEndWith != null && !className.endsWith(pathEndWith)) ||
+            (pathIncludePatterns != null && !className.matches(pathIncludePatterns)) ||
+            (pathExcludePatterns != null && className.matches(pathExcludePatterns))) {
+            return classfileBuffer;
+        }
+
+        try {
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+            ClassVisitor cv = new ClassVisitor(Opcodes.ASM9, cw) {
+                private String filePath;
+                
+                @Override
+                public void visitSource(String source, String debug) {
+                    this.filePath = constructFullPath(className, source);
+                    super.visitSource(source, debug);
+                }
+                
+                @Override
+                public MethodVisitor visitMethod(int access, String name, 
+                        String descriptor, String signature, 
+                        String[] exceptions) {
+                    MethodVisitor mv = super.visitMethod(access, name, 
+                            descriptor, signature, exceptions);
+                    
+                    return new MethodVisitor(Opcodes.ASM9, mv) {
+                        @Override
+                        public void visitLineNumber(int line, Label start) {
+                            codeTracer.traceLine(className, name, filePath, line);
+                            super.visitLineNumber(line, start);
+                        }
+                    };
+                }
+            };
+            
+            cr.accept(cv, ClassReader.EXPAND_FRAMES);
+            transformedClasses.add(className);
+            return cw.toByteArray();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return classfileBuffer;
+    }
+
+    private String constructFullPath(String className, String source) {
+        String classPath = className.replace('.', '/');
+        return BASE_DIR + "/" + classPath + ".java";
+    }
+
+    public static void retransformClass(Class<?> clazz) {
+        if (instrumentation != null) {
+            try {
+                instrumentation.retransformClasses(clazz);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

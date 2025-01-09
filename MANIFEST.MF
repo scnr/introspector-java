@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Premain-Class: com.instrumentation.agent.InstrumentationAgent
+Agent-Class: com.instrumentation.agent.InstrumentationAgent
+Build-Jdk: 11
+Created-By: Tasos Laskos
+Implementation-Title: Java Codename SCNR Agent & Middleware
+Implementation-Version: 1.0.0
+Implementation-Vendor: Ecsypno
+Specification-Title: Codename SCNR Agent & Middleware
+Specification-Version: 1.0.0
+Specification-Vendor: Ecsypno
