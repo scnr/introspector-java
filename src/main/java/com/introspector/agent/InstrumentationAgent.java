@@ -10,8 +10,14 @@ public class InstrumentationAgent {
 
     public static void premain(String agentArgs, Instrumentation inst) {
         System.out.println("Initializing Codename SCNR Introspector agent...");
+        
         parseAgentArgs(agentArgs);
-        // System.out.println(options);
+        
+        if( getOption("source_directory") == null ) {
+            options.put("source_directory", "src/main/java");
+        }
+        
+
         ClassTransformer.setInstrumentation(inst);
         inst.addTransformer(new ClassTransformer(), true);
     }

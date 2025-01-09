@@ -12,7 +12,6 @@ public class ClassTransformer implements ClassFileTransformer {
     
     private static final Set<String> transformedClasses = ConcurrentHashMap.newKeySet();
     private static Instrumentation instrumentation;
-    private static final String BASE_DIR = "src/main/java"; // Adjust this as needed
 
     public static void setInstrumentation(Instrumentation inst) {
         instrumentation = inst;
@@ -88,7 +87,7 @@ public class ClassTransformer implements ClassFileTransformer {
 
     private String constructFullPath(String className, String source) {
         String classPath = className.replace('.', '/');
-        return BASE_DIR + "/" + classPath + ".java";
+        return InstrumentationAgent.getOption("source_directory") + "/" + classPath + ".java";
     }
 
     public static void retransformClass(Class<?> clazz) {
