@@ -18,6 +18,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebFilter("/*")
@@ -57,9 +58,12 @@ public class IntrospectorFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             ResponseWrapper wrapper = new ResponseWrapper(httpResponse);
-    
+            List<Trace> traces = new ArrayList<>();
+
             try {
+                CodeTracer.clearTraces();
                 chain.doFilter(request, wrapper);
+                traces = CodeTracer.getTraces();
             } finally {
                 String ct = response.getContentType();
     
@@ -67,21 +71,23 @@ public class IntrospectorFilter implements Filter {
                     ct != null && ct.contains("html")) {
     
                     String content = wrapper.toString();
-                    String traces = formatTracesAsJson(httpRequest.getHeader("X-Scnr-Engine-Scan-Seed"));
-                    String modifiedContent = injectTraces(content, traces);
+                    String tracesAsJson = formatTracesAsJson(traces, httpRequest.getHeader("X-Scnr-Engine-Scan-Seed"));
+                    String modifiedContent = injectTraces(content, tracesAsJson);
     
+                    traces.clear();
                     writeResponse(httpResponse, modifiedContent);
                 } else {
                     wrapper.writeTo(httpResponse.getWriter());
                 }
+
+                CodeTracer.clearTraces();
             }
         } else {
             chain.doFilter(request, response);
         }
     }
 
-    private String formatTracesAsJson(String seed) {
-        List<Trace> traces = CodeTracer.getTraces();
+    private String formatTracesAsJson(List<Trace> traces, String seed) {
         StringBuilder json = new StringBuilder();
     
         json.append("\n<!-- ").append(seed).append("\n");
@@ -157,6 +163,5 @@ public class IntrospectorFilter implements Filter {
 
     @Override
     public void destroy() {
-        CodeTracer.clearTraces();
     }
 }

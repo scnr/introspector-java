@@ -2,8 +2,6 @@ package com.introspector.agent;
 
 import org.objectweb.asm.*;
 
-import com.introspector.core.CodeTracer;
-
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
@@ -12,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassTransformer implements ClassFileTransformer {
     
-    private static final CodeTracer codeTracer = new CodeTracer();
     private static final Set<String> transformedClasses = ConcurrentHashMap.newKeySet();
     private static Instrumentation instrumentation;
     private static final String BASE_DIR = "src/main/java"; // Adjust this as needed
@@ -45,7 +42,7 @@ public class ClassTransformer implements ClassFileTransformer {
 
         try {
             ClassReader cr = new ClassReader(classfileBuffer);
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
             ClassVisitor cv = new ClassVisitor(Opcodes.ASM9, cw) {
                 private String filePath;
                 
@@ -65,7 +62,13 @@ public class ClassTransformer implements ClassFileTransformer {
                     return new MethodVisitor(Opcodes.ASM9, mv) {
                         @Override
                         public void visitLineNumber(int line, Label start) {
-                            codeTracer.traceLine(className, name, filePath, line);
+                            mv.visitLdcInsn(className);
+                            mv.visitLdcInsn(name);
+                            mv.visitLdcInsn(filePath);
+                            mv.visitLdcInsn(line);
+                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/introspector/core/CodeTracer", "traceLine",
+                                    "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
+                
                             super.visitLineNumber(line, start);
                         }
                     };

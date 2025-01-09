@@ -2,8 +2,8 @@ package com.introspector.core;
 
 import java.nio.file.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,7 +74,7 @@ public class CodeTracer {
                 });
         
                 if (lines.isEmpty()) {
-                    return "Source not found: " + filePath;
+                    return "";
                 }
         
                 return String.join("\n", lines);
@@ -87,28 +87,27 @@ public class CodeTracer {
 
     }
 
-    private static List<Trace> traces = new ArrayList<>();
+    private static ThreadLocal<List<Trace>> threadLocalTraces = ThreadLocal.withInitial(ArrayList::new);
 
     public static List<Trace> getTraces() {
-        return traces;
+        return new ArrayList<>(threadLocalTraces.get());
     }
-    
+
     public static void clearTraces() {
-        traces.clear();
+        threadLocalTraces.get().clear();
     }
 
-    public void logTrace(Trace trace) {
-        // System.out.println(trace);
-        traces.add(trace);
+    public static void logTrace(Trace trace) {
+        threadLocalTraces.get().add(trace);
     }
 
-    public void traceLine(String className, String methodName, String filePath, int lineNumber) {
+    public static void traceLine(String className, String methodName, String filePath, int lineNumber) {
         Trace trace = createTrace(className, methodName, filePath, lineNumber);
         logTrace(trace);
     }
 
-    private Trace createTrace(String className, String methodName, String filePath, int lineNumber) {
-        Trace trace = new Trace(className, methodName, filePath, lineNumber);
-        return trace;
+    private static Trace createTrace(String className, String methodName, String filePath, int lineNumber) {
+        // Implementation of creating a Trace object
+        return new Trace(className, methodName, filePath, lineNumber);
     }
 }
