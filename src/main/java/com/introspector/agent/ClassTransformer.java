@@ -29,13 +29,13 @@ public class ClassTransformer implements ClassFileTransformer {
 
         String pathStartWith = InstrumentationAgent.getOption("path_start_with");
         String pathEndWith = InstrumentationAgent.getOption("path_end_with");
-        String pathIncludePatterns = InstrumentationAgent.getOption("path_include_patterns");
-        String pathExcludePatterns = InstrumentationAgent.getOption("path_exclude_patterns");
+        String pathIncludePattern = InstrumentationAgent.getOption("path_include_pattern");
+        String pathExcludePattern = InstrumentationAgent.getOption("path_exclude_pattern");
 
         if ((pathStartWith != null && !className.startsWith(pathStartWith)) ||
             (pathEndWith != null && !className.endsWith(pathEndWith)) ||
-            (pathIncludePatterns != null && !className.matches(pathIncludePatterns)) ||
-            (pathExcludePatterns != null && className.matches(pathExcludePatterns))) {
+            (pathIncludePattern != null && !className.matches(pathIncludePattern)) ||
+            (pathExcludePattern != null && className.matches(pathExcludePattern))) {
             return classfileBuffer;
         }
 
