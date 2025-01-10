@@ -1,4 +1,4 @@
-package com.introspector.agent;
+package com.ecsypno.introspector.agent;
 
 import java.lang.instrument.Instrumentation;
 import java.util.HashMap;

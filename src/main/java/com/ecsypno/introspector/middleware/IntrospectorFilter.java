@@ -1,4 +1,4 @@
-package com.middleware;
+package com.ecsypno.introspector.middleware;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import com.introspector.core.CodeTracer;
-import com.introspector.core.CodeTracer.Trace;
+import com.ecsypno.introspector.core.CodeTracer;
+import com.ecsypno.introspector.core.CodeTracer.Trace;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;

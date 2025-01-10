@@ -1,4 +1,4 @@
-package com.introspector.agent;
+package com.ecsypno.introspector.agent;
 
 import org.objectweb.asm.*;
 

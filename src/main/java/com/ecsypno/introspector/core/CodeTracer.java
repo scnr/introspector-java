@@ -1,4 +1,4 @@
-package com.introspector.core;
+package com.ecsypno.introspector.core;
 
 import java.nio.file.*;
 import java.io.IOException;
