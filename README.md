@@ -6,6 +6,7 @@
 * `path_ends_with`
 * `path_include_pattern`
 * `path_exclude_pattern`
+* `source_directory`
 
 ## Load middleware
 

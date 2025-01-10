@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ecsypno</groupId>
+    <groupId>com.ecsypno.introspector</groupId>
     <artifactId>introspector</artifactId>
     <version>1.0</version>
     <properties>
