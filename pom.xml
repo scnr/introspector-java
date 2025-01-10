@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.introspector</groupId>
+    <groupId>com.ecsypno</groupId>
     <artifactId>introspector</artifactId>
     <version>1.0</version>
     <properties>
@@ -43,11 +43,11 @@
                             <addClasspath>true</addClasspath>
                         </manifest>
                         <manifestEntries>
-                            <Premain-Class>com.introspector.agent.InstrumentationAgent</Premain-Class>
-                            <Agent-Class>com.introspector.agent.InstrumentationAgent</Agent-Class>
+                            <Premain-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Premain-Class>
+                            <Agent-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Agent-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                            <Main-Class>com.introspector.agent.InstrumentationAgent</Main-Class>
+                            <Main-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Main-Class>
                             <Boot-Class-Path>${project.build.finalName}.jar</Boot-Class-Path>
                         </manifestEntries>
                     </archive>
@@ -68,10 +68,10 @@
 
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.introspector.agent.InstrumentationAgent</mainClass>
+                                    <mainClass>com.ecsypno.introspector.agent.InstrumentationAgent</mainClass>
                                     <manifestEntries>
-                                        <Premain-Class>com.introspector.agent.InstrumentationAgent</Premain-Class>
-                                        <Agent-Class>com.introspector.agent.InstrumentationAgent</Agent-Class>
+                                        <Premain-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Premain-Class>
+                                        <Agent-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Agent-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                     </manifestEntries>

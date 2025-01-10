@@ -13,6 +13,12 @@
 MAVEN_OPTS="-javaagent:introspector-1.0.jar=path_start_with=com/example" mvn clean package tomcat7:run
 ```
 
+## Verify
+
+```bash
+curl -i http://localhost:5055/ -H "X-Scnr-Engine-Scan-Seed:Test" -H "X-Scnr-Introspector-Trace:1" -H "X-SCNR-Request-ID:1"
+```
+
 ## License
 
 All rights reserved Ecsypno Single Member P.C.
