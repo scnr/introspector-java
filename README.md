@@ -2,13 +2,40 @@
 
 ## Options
 
-* `path_start_with`
-* `path_ends_with`
-* `path_include_pattern`
-* `path_exclude_pattern`
-* `source_directory`
+| Option | Description | Default | Example |
+|--------|-------------|---------|---------|
+| `path_start_with` | Only instrument classes whose path starts with this prefix | none | `com/example` |
+| `path_ends_with` | Only instrument classes whose path ends with this suffix | none | `Controller` |
+| `path_include_pattern` | Only instrument classes matching this regex pattern | none | `.*Service.*` |
+| `path_exclude_pattern` | Exclude classes matching this regex pattern | none | `.*Test.*` |
+| `source_directory` | Root directory containing source files | `src/main/java/` | `/path/to/src` |
 
-## Load middleware
+## Install Middleware
+
+`webapp/WEB-INF/web.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <filter>
+        <filter-name>introspectorFilter</filter-name>
+        <filter-class>com.ecsypno.introspector.middleware.IntrospectorFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>introspectorFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>
+```
+
+## Load Agent along with your webapp
 
 ```bash
 MAVEN_OPTS="-javaagent:introspector-1.0.jar=path_start_with=com/example" mvn clean package tomcat7:run
