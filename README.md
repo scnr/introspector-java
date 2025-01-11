@@ -38,7 +38,7 @@
 ## Load Agent along with your webapp
 
 ```bash
-MAVEN_OPTS="-javaagent:introspector-1.0.jar=path_start_with=com/example" mvn clean package tomcat7:run
+MAVEN_OPTS="-javaagent:introspector.jar=path_start_with=com/example" mvn clean package tomcat7:run
 ```
 
 ## Verify
