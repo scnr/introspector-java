@@ -18,7 +18,7 @@ public class InstrumentationAgent {
     );
 
     public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("Initializing Codename SCNR Introspector agent...");
+        System.out.println("[INTROSPECTOR] Initializing Codename SCNR Introspector agent...");
         
         try {
             parseAgentArgs(agentArgs);
@@ -26,8 +26,8 @@ public class InstrumentationAgent {
             ClassTransformer.setInstrumentation(inst);
             inst.addTransformer(new ClassTransformer(), true);
         } catch (IllegalArgumentException e) {
-            System.err.println("Agent initialization failed: " + e.getMessage());
-            System.err.println("Valid options are: " + String.join(", ", VALID_OPTIONS));
+            System.err.println("[INTROSPECTOR] Agent initialization failed: " + e.getMessage());
+            System.err.println("[INTROSPECTOR] Valid options are: " + String.join(", ", VALID_OPTIONS));
         }
     }
 

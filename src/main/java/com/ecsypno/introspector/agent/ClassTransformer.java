@@ -15,6 +15,8 @@ public class ClassTransformer implements ClassFileTransformer {
 
     public static void setInstrumentation(Instrumentation inst) {
         instrumentation = inst;
+
+        System.out.println("[INTROSPECTOR] Setting up instrumentation.");
     }
 
     @Override
@@ -22,24 +24,24 @@ public class ClassTransformer implements ClassFileTransformer {
             Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain, 
             byte[] classfileBuffer) {
-        
-        if (className == null || transformedClasses.contains(className)) {
-            return classfileBuffer;
-        }
-
-        String pathStartWith = InstrumentationAgent.getOption("path_start_with");
-        String pathEndWith = InstrumentationAgent.getOption("path_end_with");
-        String pathIncludePattern = InstrumentationAgent.getOption("path_include_pattern");
-        String pathExcludePattern = InstrumentationAgent.getOption("path_exclude_pattern");
-
-        if ((pathStartWith != null && !className.startsWith(pathStartWith)) ||
-            (pathEndWith != null && !className.endsWith(pathEndWith)) ||
-            (pathIncludePattern != null && !className.matches(pathIncludePattern)) ||
-            (pathExcludePattern != null && className.matches(pathExcludePattern))) {
-            return classfileBuffer;
-        }
 
         try {
+            if (className == null || transformedClasses.contains(className)) {
+                return classfileBuffer;
+            }
+
+            String pathStartWith = InstrumentationAgent.getOption("path_start_with");
+            String pathEndWith = InstrumentationAgent.getOption("path_ends_with");
+            String pathIncludePattern = InstrumentationAgent.getOption("path_include_pattern");
+            String pathExcludePattern = InstrumentationAgent.getOption("path_exclude_pattern");
+
+            if ((pathStartWith != null && !className.startsWith(pathStartWith)) ||
+                (pathEndWith != null && !className.endsWith(pathEndWith)) ||
+                (pathIncludePattern != null && !className.matches(pathIncludePattern)) ||
+                (pathExcludePattern != null && className.matches(pathExcludePattern))) {
+                return classfileBuffer;
+            }
+
             ClassReader cr = new ClassReader(classfileBuffer);
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
             ClassVisitor cv = new ClassVisitor(Opcodes.ASM9, cw) {
@@ -61,12 +63,17 @@ public class ClassTransformer implements ClassFileTransformer {
                     return new MethodVisitor(Opcodes.ASM9, mv) {
                         @Override
                         public void visitLineNumber(int line, Label start) {
+                            System.out.println("[INTROSPECTOR] Injecting trace code for " + className + "." + name + " line " + line + " in " + filePath);
+
                             mv.visitLdcInsn(className);
                             mv.visitLdcInsn(name);
                             mv.visitLdcInsn(filePath);
                             mv.visitLdcInsn(line);
-                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/introspector/core/CodeTracer", "traceLine",
-                                    "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
+                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, 
+                                "com/ecsypno/introspector/core/CodeTracer", 
+                                "traceLine",
+                                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", 
+                                false);
                 
                             super.visitLineNumber(line, start);
                         }
@@ -77,8 +84,9 @@ public class ClassTransformer implements ClassFileTransformer {
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
             transformedClasses.add(className);
             return cw.toByteArray();
-            
+
         } catch (Exception e) {
+            System.err.println("[INTROSPECTOR] [ERROR] Failed to transform class: " + className);
             e.printStackTrace();
         }
         

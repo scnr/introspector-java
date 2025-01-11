@@ -68,7 +68,7 @@ public class CodeTracer {
                             return Files.readAllLines(sourcePath);
                         }
                     } catch (IOException e) {
-                        System.err.println("Error reading file: " + path + " - " + e.getMessage());
+                        System.err.println("[INTROSPECTOR] Error reading file: " + path + " - " + e.getMessage());
                     }
                     return List.of();
                 });
@@ -80,7 +80,7 @@ public class CodeTracer {
                 return String.join("\n", lines);
         
             } catch (Exception e) {
-                System.err.println("Error processing source: " + e.getMessage());
+                System.err.println("[INTROSPECTOR] Error processing source: " + e.getMessage());
                 return "Error reading source";
             }
         }
