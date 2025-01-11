@@ -26,7 +26,8 @@ public class ClassTransformer implements ClassFileTransformer {
             byte[] classfileBuffer) {
 
         try {
-            if (className == null || transformedClasses.contains(className)) {
+            if (className == null || transformedClasses.contains(className) || 
+                className.startsWith("com/ecsypno/introspector")) {
                 return classfileBuffer;
             }
 
