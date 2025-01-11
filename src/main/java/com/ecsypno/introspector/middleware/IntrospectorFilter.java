@@ -89,10 +89,15 @@ public class IntrospectorFilter implements Filter {
 
     private String formatTracesAsJson(List<Trace> traces, String seed) {
         StringBuilder json = new StringBuilder();
+        String osType = getOSType();
     
         json.append("\n<!-- ").append(seed).append("\n");
         json.append("{\n");
-        json.append("    \"platforms\": [\"java\"],\n");
+        json.append("    \"platforms\": [\"java\"");
+        if (osType != null) {
+            json.append(", \"").append(osType).append("\"");
+        }
+        json.append("],\n");
         json.append("    \"execution_flow\": {\n");
         json.append("        \"points\": [\n");
     
@@ -113,6 +118,23 @@ public class IntrospectorFilter implements Filter {
         json.append("}\n");
         json.append(seed).append(" -->\n");
         return json.toString();
+    }
+
+    public String getOSType() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win")) {
+            return "windows";
+        } else if (osName.contains("nix")) {
+            return "unix";
+        } else if (osName.contains("nux")) {
+            return "linux";
+        } else if (osName.contains("aix")) {
+            return "aix";
+        } else if (osName.contains("sunos")) {
+            return "solaris";
+        } else {
+            return null;
+        }
     }
 
     private String injectTraces(String content, String traces) {
