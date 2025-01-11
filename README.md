@@ -56,6 +56,8 @@ And messages like this after initialization for each traced line:
 [INTROSPECTOR] Injecting trace code for com/example/XssServlet.<init> line 11 in src/main/java//com/example/XssServlet.java
 ```
 
+Finally, for an integration test, to make sure:
+
 ```bash
 curl -i http://localhost:8080/ -H "X-Scnr-Engine-Scan-Seed:Test" -H "X-Scnr-Introspector-Trace:1" -H "X-SCNR-Request-ID:1"
 ```
