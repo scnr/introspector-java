@@ -40,21 +40,23 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <executions>
-                    <execution>
-                        <id>deploy-artifact</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                        <configuration>
-                            <attachPom>true</attachPom>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                        <manifestEntries>
+                            <Premain-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Premain-Class>
+                            <Agent-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Agent-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                            <Main-Class>com.ecsypno.introspector.agent.InstrumentationAgent</Main-Class>
+                            <Boot-Class-Path>${project.build.finalName}.jar</Boot-Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
             <!-- Maven Shade Plugin Configuration -->
             <plugin>
@@ -69,8 +71,7 @@
                         </goals>
                         <configuration>
                             <!-- Attach the shaded JAR with a classifier -->
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>shaded</shadedClassifierName>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
 
                             <!-- Create a dependency-reduced POM -->
                             <createDependencyReducedPom>true</createDependencyReducedPom>
@@ -105,16 +106,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Maven Deploy Plugin Configuration (if not already present) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <configuration>
-                    <uniqueVersion>true</uniqueVersion>
-                </configuration>
             </plugin>
         </plugins>
     </build>
